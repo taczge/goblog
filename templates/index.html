@@ -2,10 +2,35 @@
 <html lang="ja">
   <head>
     <meta charset="utf-8">
-    <title>blog</title>
+    <title>BLOG</title>
+    <link rel="stylesheet" type="text/css" href="http://yui.yahooapis.com/3.18.1/build/cssreset/cssreset-min.css">
+    <link rel="stylesheet" href="../css/style.css">
   </head>
   <body>
-    <h1>Blog</h1>
-    <p>こんにちは</p>
-  </body>
+    <div id="container">
+      <div id="header"><a href="index.html"><h1>BLOG</h1></a></div>
+      <div id="menu">
+        <ul>
+          <li><a href="index.html">HOME</a></li>
+          <li><a href="">POST</a></li>
+        </ul>
+      </div>
+      <div id="main">
+        <div id="contents">{{range .}}
+          <div id="entry">
+            <div id="entry-info">
+              <div id="date">
+                <span id="year">{{.Time.Year |html}}</span><span id="hyphen">-</span><span id="month">{{.Time.Month |html}}</span><span id="hyphen">-</span><span id="day">{{.Time.Day |html}}</span>
+              </div>
+            </div>
+            <h2>{{.Title |html}}</h2>
+            <div id="entry-contents">
+              {{printf "%s" .Body |html}}
+            </div>
+          </div>{{end}}
+        </div> <!-- #contents -->
+      </div> <!-- #main -->
+      <div id="footer"></div>
+    </div> <!-- #container -->
+  <body>
 </html>
