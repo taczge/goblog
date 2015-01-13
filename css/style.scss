@@ -26,17 +26,16 @@ $brandColor: #009900;
 
 #header {
     margin-bottom: 15px;
-    text-align: center;
-    padding: 20px;
-    font-size: 40px;
+    padding: 20px 0 20px 0;
+    text-align: left;
+    font-size: 50px;
     font-weight: bold;
-    background-color: $brandColor;
-    color: white;
+    background-color: white;
+    border-bottom: solid 1px gray;
 
     a {
       text-decoration: none;
-      color: white;
-      font-weight: bold;
+      color: black;
       display: block;
     }
 }
@@ -75,25 +74,31 @@ $brandColor: #009900;
 #footer {
     font-size: 12px;
     text-align: center;
-    border-top: 3px solid crimson;
     padding: 10px 0 20px;
 }
 
 #contents {
   h2 {
     font-weight: bold;
-    font-size: 25px;
-    border-left: 10px solid gray;
-    padding: 5px 0 5px 8px;
+    font-size: 30px;
+    padding: 5px 0 5px 0;
     margin-bottom: 15px;
-    color: crimson;
+//    color: crimson;
   }
 
   p {
-    font-size: 17px;
+    color: gray;
+    font-size: 18px;
     margin-bottom: 14px;
   }
 }
 
 #entry {
+  margin-bottom: 80px;
+}
+
+#entry-info {
+  #date {
+    color: gray;
+  }
 }

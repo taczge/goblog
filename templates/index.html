@@ -9,25 +9,50 @@
   <body>
     <div id="container">
       <div id="header"><a href="index.html"><h1>BLOG</h1></a></div>
+      <!--
       <div id="menu">
         <ul>
           <li><a href="index.html">HOME</a></li>
           <li><a href="">POST</a></li>
         </ul>
       </div>
+      -->
       <div id="main">
-        <div id="contents">{{range .}}
+        <div id="contents">
           <div id="entry">
             <div id="entry-info">
               <div id="date">
-                <span id="year">{{.Time.Year |html}}</span><span id="hyphen">-</span><span id="month">{{.Time.Month |html}}</span><span id="hyphen">-</span><span id="day">{{.Time.Day |html}}</span>
+                <span id="year">2015</span><span id="hyphen">-</span>
+                <span id="month">1</span><span id="hyphen">-</span>
+                <span id="day">13</span>
               </div>
             </div>
-            <h2>{{.Title |html}}</h2>
+            <h2>オブジェクト指向について考える</h2>
             <div id="entry-contents">
-              {{printf "%s" .Body |html}}
+              <p>本文です本文です本文です本文です本文です
+              本文です本文です本文です本文です本文です
+              本文です本文です本文です本文です本文です
+              本文です本文です本文です本文です本文です
+              本文です本文です本文です本文です本文です</p>
             </div>
-          </div>{{end}}
+          </div>
+                    <div id="entry">
+            <div id="entry-info">
+              <div id="date">
+                <span id="year">2015</span><span id="hyphen">-</span>
+                <span id="month">1</span><span id="hyphen">-</span>
+                <span id="day">14</span>
+              </div>
+            </div>
+            <h2>もう一度オブジェクト指向について考える</h2>
+            <div id="entry-contents">
+              <p>本文です本文です本文です本文です本文です
+              本文です本文です本文です本文です本文です
+              本文です本文です本文です本文です本文です
+              本文です本文です本文です本文です本文です
+              本文です本文です本文です本文です本文です</p>
+            </div>
+          </div>
         </div> <!-- #contents -->
       </div> <!-- #main -->
       <div id="footer"></div>
