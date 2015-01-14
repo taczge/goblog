@@ -78,18 +78,16 @@ $brandColor: #009900;
 }
 
 #contents {
+  color: gray;
+  font-size: 18px;
+  margin-bottom: 14px;
+
   h2 {
     font-weight: bold;
     font-size: 30px;
     padding: 5px 0 5px 0;
     margin-bottom: 15px;
-//    color: crimson;
-  }
-
-  p {
-    color: gray;
-    font-size: 18px;
-    margin-bottom: 14px;
+    color: black;
   }
 }
 
