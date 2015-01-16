@@ -104,8 +104,7 @@ func (this *Database) GetLatesed(n int) []Entry {
 			log.Fatalf("invalid date %+v\n", date)
 		}
 
-		e := Entry{Title: title, Date: date.Time, Body: body}
-		entries[i] = e
+		entries[i] = Entry{Title: title, Date: date.Time, Body: body}
 		i++
 	}
 
