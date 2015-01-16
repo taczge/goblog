@@ -83,7 +83,7 @@ func (this *Database) Size() int {
 }
 
 func (this *Database) GetLatesed(n int) []Entry {
-	query := "select title, date, body from entry order by id limit ?"
+	query := "select title, date, body from entry order by id desc limit ?"
 	rows, err := this.db.Query(query, n)
 	if err != nil {
 		log.Fatal(err)
@@ -139,12 +139,19 @@ func registerFileServer(paths []string) {
 	}
 }
 
+func entryHandler(w http.ResponseWriter, r *http.Request) {
+	log.Printf("call handler: %+v", r.URL)
+	fmt.Fprintf(w, "%+v\n", r.URL.Path)
+}
+
 func main() {
 	log.Printf("run server.")
 	conf := LoadConfig()
 
 	http.HandleFunc("/", makeHandler(conf))
 	registerFileServer(conf.FileServer)
+
+	http.HandleFunc("/entry/", entryHandler)
 
 	port := fmt.Sprintf(":%d", conf.Port)
 	log.Fatal(http.ListenAndServe(port, nil))
