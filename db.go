@@ -13,13 +13,10 @@ type Database struct {
 	db *sql.DB
 }
 
-func ConnectDatabase(c Config) Database {
+func ConnectDatabase(c Config) (Database, error) {
 	db, err := sql.Open("mysql", c.DBUser+":"+c.DBPasswd+"@/"+c.DBName)
-	if err != nil {
-		panic(err)
-	}
 
-	return Database{db: db}
+	return Database{db: db}, err
 }
 
 func (this *Database) Size() int {

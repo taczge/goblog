@@ -62,10 +62,13 @@ func registerFileServer(paths []string) {
 func makeHandler(conf Config) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		t := template.Must(template.ParseFiles("templates/index.html"))
-		db := ConnectDatabase(conf)
+		db, err := ConnectDatabase(conf)
+		if err != nil {
+			panic(err) // いまだけ，じき直す
+		}
 		entries := db.GetLatesed(conf.ArticlePerPage)
 
-		err := t.Execute(w, entries)
+		err = t.Execute(w, entries)
 		if err != nil {
 			panic(err)
 		}
@@ -84,7 +87,11 @@ func makeEntryHandler(conf Config) http.HandlerFunc {
 		log.Printf("call handler: %+v", r.URL)
 		id := trim(r.URL.Path, "/entry/", ".html")
 		log.Println(id)
-		db := ConnectDatabase(conf)
+		db, err := ConnectDatabase(conf)
+		if err != nil {
+			panic(err) // いまだけ，じき直す
+		}
+
 		entry, err := db.GetEntry(id)
 		if err != nil {
 			log.Printf("not found %+v.\n", r.URL)
