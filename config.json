@@ -2,6 +2,6 @@
     "db_user": "root",
     "db_passwd": "f",
     "db_name": "blog",
-    "article_per_page": 5,
+    "article_per_page": 3,
     "port": 8080
 }
