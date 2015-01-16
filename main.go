@@ -47,11 +47,6 @@ type Entry struct {
 	Body  string
 }
 
-type Entries interface {
-	Size() int
-	GetLatesed(int) []Entry
-}
-
 func registerFileServer(paths []string) {
 	for _, path := range paths {
 		pattern := fmt.Sprintf("/%v/", path)
