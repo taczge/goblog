@@ -1,6 +1,6 @@
 {
     "db_user": "root",
-    "db_passwd": "f",
+    "db_passwd": "",
     "db_name": "blog",
     "article_per_page": 3,
     "port": 8080,
