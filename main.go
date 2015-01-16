@@ -15,6 +15,8 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 )
 
+const CONFIG_FILE = "config.json"
+
 type Config struct {
 	DBUser         string `json:"db_user"`
 	DBPasswd       string `json:"db_passwd"`
@@ -24,20 +26,19 @@ type Config struct {
 }
 
 func LoadConfig() Config {
-	filename := "config.json"
-	file, err := os.Open(filename)
+	file, err := os.Open(CONFIG_FILE)
 	if err != nil {
 		panic(err)
 	}
 	defer file.Close()
 
 	dec := json.NewDecoder(file)
-	var c Config
-	dec.Decode(&c)
+	var conf Config
+	dec.Decode(&conf)
 
-	log.Printf("load %s.", filename)
+	log.Printf("load %s.", CONFIG_FILE)
 
-	return c
+	return conf
 }
 
 type Entry struct {
@@ -117,23 +118,24 @@ func (this *Database) GetLatesed(n int) []Entry {
 	return entries
 }
 
-func handler(w http.ResponseWriter, r *http.Request) {
-	t := template.Must(template.ParseFiles("templates/index.html"))
+func makeHandler(conf Config) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		t := template.Must(template.ParseFiles("templates/index.html"))
+		db := ConnectDatabase(conf)
+		entries := db.GetLatesed(conf.ArticlePerPage)
 
-	db := ConnectDatabase(conf)
-	entries := db.GetLatesed(conf.ArticlePerPage)
-	err := t.Execute(w, entries)
-	if err != nil {
-		panic(err)
+		err := t.Execute(w, entries)
+		if err != nil {
+			panic(err)
+		}
 	}
 }
 
-var conf Config
-
 func main() {
-	conf = LoadConfig()
+	log.Printf("run server.")
+	conf := LoadConfig()
 
-	http.HandleFunc("/", handler)
+	http.HandleFunc("/", makeHandler(conf))
 	http.Handle("/css/", http.StripPrefix("/css/", http.FileServer(http.Dir("css"))))
 	http.Handle("/resources/", http.StripPrefix("/resources/", http.FileServer(http.Dir("resources"))))
 	http.ListenAndServe(fmt.Sprintf(":%d", conf.Port), nil)
