@@ -44,7 +44,6 @@ func LoadConfig() Config {
 type Entry struct {
 	Title string
 	Date  time.Time
-	Tags  []string
 	Body  string
 }
 
