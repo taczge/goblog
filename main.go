@@ -7,6 +7,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"path/filepath"
 	"strings"
 	"time"
 )
@@ -25,15 +26,16 @@ type Config struct {
 func LoadConfig() Config {
 	file, err := os.Open(CONFIG_FILE)
 	if err != nil {
-		panic(err)
+		path, _ := filepath.Abs(CONFIG_FILE)
+		log.Fatalf("Cannot find %s.", path)
 	}
 	defer file.Close()
 
-	dec := json.NewDecoder(file)
 	var conf Config
+	dec := json.NewDecoder(file)
 	dec.Decode(&conf)
 
-	log.Printf("load %s.", CONFIG_FILE)
+	log.Printf("Load %s.", CONFIG_FILE)
 
 	return conf
 }
@@ -103,7 +105,7 @@ func makeEntryHandler(conf Config) http.HandlerFunc {
 }
 
 func main() {
-	log.Printf("run server.")
+	log.Printf("Run server.")
 	conf := LoadConfig()
 
 	http.HandleFunc("/", makeHandler(conf))
