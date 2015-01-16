@@ -121,7 +121,7 @@ func (this *Database) GetLatesed(n int) []Entry {
 	return entries
 }
 
-func (this *Database) GetEntry(idString string) Entry {
+func (this *Database) GetEntry(idString string) (Entry, error) {
 	query := "SELECT * FROM entry WHERE id = ?"
 
 	var id int
@@ -130,11 +130,8 @@ func (this *Database) GetEntry(idString string) Entry {
 	var body string
 
 	err := this.db.QueryRow(query, idString).Scan(&id, &title, &date, &body)
-	if err != nil {
-		log.Fatal(err)
-	}
 
-	return Entry{Id: id, Title: title, Date: date.Time, Body: body}
+	return Entry{Id: id, Title: title, Date: date.Time, Body: body}, err
 }
 
 func registerFileServer(paths []string) {
@@ -169,12 +166,16 @@ func trim(s, prefix, suffix string) string {
 func makeEntryHandler(conf Config) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		log.Printf("call handler: %+v", r.URL)
-		fmt.Fprintf(w, "%+v\n", r.URL.Path)
 		id := trim(r.URL.Path, "/entry/", ".html")
 		log.Println(id)
 		db := ConnectDatabase(conf)
-		entry := db.GetEntry(id)
-		fmt.Fprintf(w, "%+v\n", entry)
+		entry, err := db.GetEntry(id)
+		if err != nil {
+			log.Printf("not found %+v.\n", r.URL)
+			fmt.Fprintf(w, "not found %+v.\n", r.URL)
+		} else {
+			fmt.Fprintf(w, "%+v\n", entry)
+		}
 	}
 }
 
