@@ -22,11 +22,7 @@
           <div id="entry">
             <div id="entry-info">
               <div id="date">
-                <span id="year">{{$entry.Date.Year}}</span>
-                <span id="hyphen">-</span>
-                <span id="month">{{$entry.Date.Month}}</span>
-                <span id="hyphen">-</span>
-                <span id="day">{{$entry.Date.Day}}</span>
+                {{ printf "%d-%d-%d" $entry.Date.Year $entry.Date.Month $entry.Date.Day}}
               </div>
             </div>
             <h2>{{$entry.Title |html}}</h2>
