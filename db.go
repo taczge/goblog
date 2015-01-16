@@ -87,3 +87,17 @@ func (this *Database) GetEntry(idString string) (Entry, error) {
 
 	return Entry{Id: id, Title: title, Date: date.Time, Body: body}, err
 }
+
+func (this *Database) Post(e Entry) error {
+	query := "INSERT INTO entry (title, date, body) VALUES(?, ?, ?)"
+
+	_, err := this.db.Exec(query, e.Title, e.Date, e.Body)
+	if err != nil {
+		log.Printf("posting %+v ends in failure.\n", e.Title)
+
+	} else {
+		log.Printf("complete posting %+v.\n", e.Title)
+	}
+
+	return err;
+}
