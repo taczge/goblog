@@ -18,11 +18,12 @@ import (
 const CONFIG_FILE = "config.json"
 
 type Config struct {
-	DBUser         string `json:"db_user"`
-	DBPasswd       string `json:"db_passwd"`
-	DBName         string `json:"db_name"`
-	ArticlePerPage int    `json:"article_per_page"`
-	Port           int    `json:"port"`
+	DBUser         string   `json:"db_user"`
+	DBPasswd       string   `json:"db_passwd"`
+	DBName         string   `json:"db_name"`
+	ArticlePerPage int      `json:"article_per_page"`
+	Port           int      `json:"port"`
+	FileServer     []string `json:"file_server"`
 }
 
 func LoadConfig() Config {
@@ -130,16 +131,22 @@ func makeHandler(conf Config) http.HandlerFunc {
 	}
 }
 
+func registerFileServer(paths []string) {
+	for _, path := range paths {
+		pattern := fmt.Sprintf("/%v/", path)
+		handler := http.FileServer(http.Dir(path))
+
+		http.Handle(pattern, http.StripPrefix(pattern, handler))
+	}
+}
+
 func main() {
 	log.Printf("run server.")
 	conf := LoadConfig()
 
 	http.HandleFunc("/", makeHandler(conf))
-	http.Handle("/css/", http.StripPrefix("/css/", http.FileServer(http.Dir("css"))))
-	http.Handle("/resources/", http.StripPrefix("/resources/", http.FileServer(http.Dir("resources"))))
+	registerFileServer(conf.FileServer)
 
-	err := http.ListenAndServe(fmt.Sprintf(":%d", conf.Port), nil)
-	if err != nil {
-		panic(err)
-	}
+	port := fmt.Sprintf(":%d", conf.Port)
+	log.Fatal(http.ListenAndServe(port, nil))
 }
