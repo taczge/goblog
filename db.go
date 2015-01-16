@@ -90,11 +90,9 @@ func (this *Database) Post(e Entry) error {
 	_, err := this.db.Exec(query, ENTRY_TABLE_NAME, e.Title, e.Date, e.Body)
 	if err != nil {
 		log.Printf("posting %+v ends in failure.\n", e.Title)
-
 	} else {
 		log.Printf("complete posting %+v.\n", e.Title)
 	}
 
-	return err;
+	return err
 }
-
