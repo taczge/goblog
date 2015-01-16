@@ -44,6 +44,7 @@ func LoadConfig() Config {
 }
 
 type Entry struct {
+	Id    int
 	Title string
 	Date  time.Time
 	Body  string
@@ -84,7 +85,7 @@ func (this *Database) Size() int {
 }
 
 func (this *Database) GetLatesed(n int) []Entry {
-	query := "select title, date, body from entry order by id desc limit ?"
+	query := "SELECT * FROM entry ORDER BY id DESC LIMIT ?"
 	rows, err := this.db.Query(query, n)
 	if err != nil {
 		log.Fatal(err)
@@ -94,10 +95,11 @@ func (this *Database) GetLatesed(n int) []Entry {
 	var entries = make([]Entry, n, n)
 	var i = 0
 	for rows.Next() {
+		var id int
 		var title string
 		var date mysql.NullTime
 		var body string
-		if err := rows.Scan(&title, &date, &body); err != nil {
+		if err := rows.Scan(&id, &title, &date, &body); err != nil {
 			log.Fatal(err)
 		}
 
@@ -105,7 +107,8 @@ func (this *Database) GetLatesed(n int) []Entry {
 			log.Fatalf("invalid date %+v\n", date)
 		}
 
-		entries[i] = Entry{Title: title, Date: date.Time, Body: body}
+		e := Entry{Id: id, Title: title, Date: date.Time, Body: body}
+		entries[i] = e
 		i++
 	}
 
@@ -118,19 +121,20 @@ func (this *Database) GetLatesed(n int) []Entry {
 	return entries
 }
 
-func (this *Database) GetEntry(id string) Entry {
-	query := "SELECT title, date, body FROM entry WHERE id = ?"
+func (this *Database) GetEntry(idString string) Entry {
+	query := "SELECT * FROM entry WHERE id = ?"
 
+	var id int
 	var title string
 	var date mysql.NullTime
 	var body string
 
-	err := this.db.QueryRow(query, id).Scan(&title, &date, &body)
+	err := this.db.QueryRow(query, idString).Scan(&id, &title, &date, &body)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	return Entry{Title: title, Date: date.Time, Body: body}
+	return Entry{Id: id, Title: title, Date: date.Time, Body: body}
 }
 
 func registerFileServer(paths []string) {
