@@ -9,6 +9,8 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 )
 
+const ENTRY_TABLE_NAME = "entry"
+
 type Database struct {
 	db *sql.DB
 }
@@ -20,9 +22,9 @@ func ConnectDatabase(c Config) (Database, error) {
 }
 
 func (this *Database) Size() int {
-	query := "select count(*) from entry"
+	query := "select count(*) from ?"
 	var nEntry int
-	err := this.db.QueryRow(query).Scan(&nEntry)
+	err := this.db.QueryRow(query, ENTRY_TABLE_NAME).Scan(&nEntry)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -32,8 +34,8 @@ func (this *Database) Size() int {
 }
 
 func (this *Database) GetLatesed(n int) []Entry {
-	query := "SELECT * FROM entry ORDER BY id DESC LIMIT ?"
-	rows, err := this.db.Query(query, n)
+	query := "SELECT * FROM ? ORDER BY id DESC LIMIT ?"
+	rows, err := this.db.Query(query, ENTRY_TABLE_NAME, n)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -69,22 +71,23 @@ func (this *Database) GetLatesed(n int) []Entry {
 }
 
 func (this *Database) GetEntry(idString string) (Entry, error) {
-	query := "SELECT * FROM entry WHERE id = ?"
+	query := "SELECT * FROM ? WHERE id = ?"
 
 	var id int
 	var title string
 	var date mysql.NullTime
 	var body string
 
-	err := this.db.QueryRow(query, idString).Scan(&id, &title, &date, &body)
+	row := this.db.QueryRow(query, ENTRY_TABLE_NAME, idString)
+	err := row.Scan(&id, &title, &date, &body)
 
 	return Entry{Id: id, Title: title, Date: date.Time, Body: body}, err
 }
 
 func (this *Database) Post(e Entry) error {
-	query := "INSERT INTO entry (title, date, body) VALUES(?, ?, ?)"
+	query := "INSERT INTO ? (title, date, body) VALUES(?, ?, ?)"
 
-	_, err := this.db.Exec(query, e.Title, e.Date, e.Body)
+	_, err := this.db.Exec(query, ENTRY_TABLE_NAME, e.Title, e.Date, e.Body)
 	if err != nil {
 		log.Printf("posting %+v ends in failure.\n", e.Title)
 
@@ -94,3 +97,4 @@ func (this *Database) Post(e Entry) error {
 
 	return err;
 }
+
