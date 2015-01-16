@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"html/template"
+	"io"
 	"log"
 	"net/http"
 	"os"
@@ -33,7 +34,9 @@ func LoadConfig() Config {
 
 	var conf Config
 	dec := json.NewDecoder(file)
-	dec.Decode(&conf)
+	if err := dec.Decode(&conf); err != nil {
+		log.Fatal(err)
+	}
 
 	log.Printf("Load %s.", CONFIG_FILE)
 
