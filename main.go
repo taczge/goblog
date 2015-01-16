@@ -10,6 +10,8 @@ import (
 	"os"
 	"time"
 
+	"github.com/go-sql-driver/mysql"
+
 	_ "github.com/go-sql-driver/mysql"
 )
 
@@ -80,7 +82,7 @@ func (this *Database) Size() int {
 }
 
 func (this *Database) GetLatesed(n int) []Entry {
-	query := "select id, title, body from entry order by id limit ?"
+	query := "select title, date, body from entry order by id limit ?"
 	rows, err := this.db.Query(query, n)
 	if err != nil {
 		log.Fatal(err)
@@ -90,14 +92,18 @@ func (this *Database) GetLatesed(n int) []Entry {
 	var entries = make([]Entry, n, n)
 	var i = 0
 	for rows.Next() {
-		var id int
 		var title string
+		var date mysql.NullTime
 		var body string
-		if err := rows.Scan(&id, &title, &body); err != nil {
+		if err := rows.Scan(&title, &date, &body); err != nil {
 			log.Fatal(err)
 		}
 
-		e := Entry{Title: title, Body: body}
+		if !date.Valid {
+			log.Fatalf("invalid date %+v\n", date)
+		}
+
+		e := Entry{Title: title, Date: date.Time, Body: body}
 		entries[i] = e
 		i++
 	}
