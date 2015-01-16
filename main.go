@@ -8,6 +8,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"strings"
 	"time"
 
 	"github.com/go-sql-driver/mysql"
@@ -154,11 +155,19 @@ func makeHandler(conf Config) http.HandlerFunc {
 	}
 }
 
+func trim(s, prefix, suffix string) string {
+	t := strings.TrimPrefix(s, prefix)
+	u := strings.TrimSuffix(t, suffix)
+
+	return u
+}
+
 func makeEntryHandler(conf Config) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		log.Printf("call handler: %+v", r.URL)
 		fmt.Fprintf(w, "%+v\n", r.URL.Path)
-		id := r.URL.Path[len("/entry/"):]
+		id := trim(r.URL.Path, "/entry/", ".html")
+		log.Println(id)
 		db := ConnectDatabase(conf)
 		entry := db.GetEntry(id)
 		fmt.Fprintf(w, "%+v\n", entry)
