@@ -117,6 +117,30 @@ func (this *Database) GetLatesed(n int) []Entry {
 	return entries
 }
 
+func (this *Database) GetEntry(id string) Entry {
+	query := "SELECT title, date, body FROM entry WHERE id = ?"
+
+	var title string
+	var date mysql.NullTime
+	var body string
+
+	err := this.db.QueryRow(query, id).Scan(&title, &date, &body)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	return Entry{Title: title, Date: date.Time, Body: body}
+}
+
+func registerFileServer(paths []string) {
+	for _, path := range paths {
+		pattern := fmt.Sprintf("/%v/", path)
+		handler := http.FileServer(http.Dir(path))
+
+		http.Handle(pattern, http.StripPrefix(pattern, handler))
+	}
+}
+
 func makeHandler(conf Config) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		t := template.Must(template.ParseFiles("templates/index.html"))
@@ -130,18 +154,15 @@ func makeHandler(conf Config) http.HandlerFunc {
 	}
 }
 
-func registerFileServer(paths []string) {
-	for _, path := range paths {
-		pattern := fmt.Sprintf("/%v/", path)
-		handler := http.FileServer(http.Dir(path))
-
-		http.Handle(pattern, http.StripPrefix(pattern, handler))
+func makeEntryHandler(conf Config) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		log.Printf("call handler: %+v", r.URL)
+		fmt.Fprintf(w, "%+v\n", r.URL.Path)
+		id := r.URL.Path[len("/entry/"):]
+		db := ConnectDatabase(conf)
+		entry := db.GetEntry(id)
+		fmt.Fprintf(w, "%+v\n", entry)
 	}
-}
-
-func entryHandler(w http.ResponseWriter, r *http.Request) {
-	log.Printf("call handler: %+v", r.URL)
-	fmt.Fprintf(w, "%+v\n", r.URL.Path)
 }
 
 func main() {
@@ -151,7 +172,7 @@ func main() {
 	http.HandleFunc("/", makeHandler(conf))
 	registerFileServer(conf.FileServer)
 
-	http.HandleFunc("/entry/", entryHandler)
+	http.HandleFunc("/entry/", makeEntryHandler(conf))
 
 	port := fmt.Sprintf(":%d", conf.Port)
 	log.Fatal(http.ListenAndServe(port, nil))
