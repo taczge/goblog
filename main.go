@@ -137,5 +137,9 @@ func main() {
 	http.HandleFunc("/", makeHandler(conf))
 	http.Handle("/css/", http.StripPrefix("/css/", http.FileServer(http.Dir("css"))))
 	http.Handle("/resources/", http.StripPrefix("/resources/", http.FileServer(http.Dir("resources"))))
-	http.ListenAndServe(fmt.Sprintf(":%d", conf.Port), nil)
+
+	err := http.ListenAndServe(fmt.Sprintf(":%d", conf.Port), nil)
+	if err != nil {
+		panic(err)
+	}
 }
