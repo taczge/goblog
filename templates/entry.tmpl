@@ -1,6 +1,5 @@
 {{define "entry"}}
 {{template "header"}}
-
 <div id="entry">
   <div id="entry-info">
     <div id="date">{{ printf "%d-%d-%d" .Date.Year .Date.Month .Date.Day}}</div>
@@ -10,6 +9,5 @@
     {{ printf "%s" .Body |html}}
   </div>
 </div>
-
 {{template "footer"}}
 {{end}}
