@@ -34,8 +34,8 @@ func (this *Database) Size() int {
 }
 
 func (this *Database) GetLatesed(n int) []Entry {
-	query := "SELECT * FROM ? ORDER BY id DESC LIMIT ?"
-	rows, err := this.db.Query(query, ENTRY_TABLE_NAME, n)
+	query := "SELECT * FROM " + ENTRY_TABLE_NAME + " ORDER BY id DESC LIMIT ?"
+	rows, err := this.db.Query(query, n)
 	if err != nil {
 		log.Fatal(err)
 	}

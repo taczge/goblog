@@ -8,12 +8,13 @@ import (
 )
 
 type Config struct {
-	DBUser         string   `json:"db_user"`
-	DBPasswd       string   `json:"db_passwd"`
-	DBName         string   `json:"db_name"`
-	ArticlePerPage int      `json:"article_per_page"`
-	Port           int      `json:"port"`
-	FileServer     []string `json:"file_server"`
+	DBUser          string   `json:"db_user"`
+	DBPasswd        string   `json:"db_passwd"`
+	DBName          string   `json:"db_name"`
+	ArticlePerPage  int      `json:"article_per_page"`
+	ArchiveListSize int      `json:"archive_list_size"`
+	Port            int      `json:"port"`
+	FileServer      []string `json:"file_server"`
 }
 
 func LoadConfig() Config {

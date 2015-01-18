@@ -18,19 +18,12 @@
         </ul>
       </div>
       <div id="main">
-        <div id="contents">{{range $entry := .}}
-          <div id="entry">
-            <div id="entry-info">
-              <div id="date">
-                {{ printf "%d-%d-%d" $entry.Date.Year $entry.Date.Month $entry.Date.Day}}
-              </div>
-            </div>
-            <h2>{{$entry.Title |html}}</h2>
-            <div id="entry-contents">
-              {{ printf "%s" $entry.Body |html}}
-            </div>
-          </div>{{end}}
-        </div> <!-- #contents -->
+        <div id="archive">
+          <h2>Archive</h2>
+          <ul>{{range $entry := .}}
+            <li>{{$entry.Title |html}}</li>{{end}}
+          </ul>
+        </div>
       </div> <!-- #main -->
       <div id="footer"></div>
     </div> <!-- #container -->

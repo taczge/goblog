@@ -70,6 +70,28 @@ func makeEntryHandler(conf Config) http.HandlerFunc {
 	}
 }
 
+func makeArchiveHandler(conf Config) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		db, err := ConnectDatabase(conf)
+		if err != nil {
+			panic(err) // いまだけ，じき直す
+		}
+
+		// TODO: GetEntries
+		entries := db.GetLatesed(conf.ArchiveListSize)
+		if err != nil {
+			log.Printf("not found %+v.\n", r.URL)
+			fmt.Fprintf(w, "not found %+v.\n", r.URL)
+		}
+
+		t := template.Must(template.ParseFiles("templates/archive.html"))
+		err = t.Execute(w, entries)
+		if err != nil {
+			panic(err)
+		}
+	}
+}
+
 func main() {
 	log.Printf("Run server.")
 	conf := LoadConfig()
@@ -78,6 +100,7 @@ func main() {
 	registerFileServer(conf.FileServer)
 
 	http.HandleFunc("/entry/", makeEntryHandler(conf))
+	http.HandleFunc("/archive.html", makeArchiveHandler(conf))
 
 	port := fmt.Sprintf(":%d", conf.Port)
 	log.Fatal(http.ListenAndServe(port, nil))
