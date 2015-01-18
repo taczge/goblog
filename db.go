@@ -34,7 +34,7 @@ func (this *Database) Size() int {
 
 func (this *Database) GetEntries(n, offset int) []Entry {
 	query := "SELECT * FROM " + ENTRY_TABLE_NAME + " ORDER BY id DESC LIMIT ? OFFSET ?"
-	rows, err := this.db.Query(query, ENTRY_TABLE_NAME, n, offset)
+	rows, err := this.db.Query(query, n, offset)
 	if err != nil {
 		log.Fatal(err)
 	}
