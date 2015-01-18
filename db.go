@@ -33,9 +33,9 @@ func (this *Database) Size() int {
 	return nEntry
 }
 
-func (this *Database) GetLatesed(n int) []Entry {
-	query := "SELECT * FROM " + ENTRY_TABLE_NAME + " ORDER BY id DESC LIMIT ?"
-	rows, err := this.db.Query(query, n)
+func (this *Database) GetEntries(n, offset int) []Entry {
+	query := "SELECT * FROM " + ENTRY_TABLE_NAME + " ORDER BY id DESC LIMIT ? OFFSET ?"
+	rows, err := this.db.Query(query, n, offset)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -65,7 +65,7 @@ func (this *Database) GetLatesed(n int) []Entry {
 		log.Fatal(err)
 	}
 
-	log.Printf("invoke query to get latest %d articles.", n)
+	log.Printf("invoke query to get %d articles(offset=%d).", n, offset)
 
 	return entries
 }

@@ -37,7 +37,7 @@ func makeHandler(conf Config) http.HandlerFunc {
 		if err != nil {
 			panic(err) // いまだけ，じき直す
 		}
-		entries := db.GetLatesed(conf.ArticlePerPage)
+		entries := db.GetEntries(conf.ArticlePerPage, 0)
 
 		err = t.ExecuteTemplate(w, "index", entries)
 		if err != nil {
@@ -80,8 +80,7 @@ func makeArchiveHandler(conf Config) http.HandlerFunc {
 			panic(err) // TODO: internal server error?
 		}
 
-		// TODO: GetEntries??
-		entries := db.GetLatesed(conf.ArchiveListSize)
+		entries := db.GetEntries(conf.ArchiveListSize, 0)
 		if err != nil {
 			log.Printf("not found %+v.\n", r.URL)
 			fmt.Fprintf(w, "not found %+v.\n", r.URL)
