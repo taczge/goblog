@@ -1,3 +1,4 @@
+{{define "header"}}
 <!DOCTYPE html>
 <html lang="ja">
   <head>
@@ -18,14 +19,5 @@
         </ul>
       </div>
       <div id="main">
-        <div id="archive">
-          <h2>Archive</h2>
-          <ul>{{range $entry := .}}
-            <li>{{$entry.Title |html}}</li>{{end}}
-          </ul>
-        </div>
-      </div> <!-- #main -->
-      <div id="footer"></div>
-    </div> <!-- #container -->
-  <body>
-</html>
+         <div id="contents">
+{{end}}

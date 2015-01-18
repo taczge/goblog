@@ -1,0 +1,16 @@
+{{define "index"}}
+{{template "header"}}
+          {{range $entry := .}}
+          <div id="entry">
+            <div id="entry-info">
+              <div id="date">
+                {{ printf "%d-%d-%d" $entry.Date.Year $entry.Date.Month $entry.Date.Day}}
+              </div>
+            </div>
+            <h2>{{$entry.Title |html}}</h2>
+            <div id="entry-contents">
+              {{ printf "%s" $entry.Body |html}}
+            </div>
+          </div>{{end}}
+{{template "footer"}}
+{{end}}
