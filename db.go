@@ -22,20 +22,19 @@ func ConnectDatabase(c Config) (Database, error) {
 }
 
 func (this *Database) Size() int {
-	query := "select count(*) from ?"
-	var nEntry int
-	err := this.db.QueryRow(query, ENTRY_TABLE_NAME).Scan(&nEntry)
+	query := "select count(*) from " + ENTRY_TABLE_NAME
+	var size int
+	err := this.db.QueryRow(query).Scan(&size)
 	if err != nil {
 		log.Fatal(err)
 	}
-	log.Printf("Database has %d articles.\n", nEntry)
 
-	return nEntry
+	return size
 }
 
 func (this *Database) GetEntries(n, offset int) []Entry {
 	query := "SELECT * FROM " + ENTRY_TABLE_NAME + " ORDER BY id DESC LIMIT ? OFFSET ?"
-	rows, err := this.db.Query(query, n, offset)
+	rows, err := this.db.Query(query, ENTRY_TABLE_NAME, n, offset)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -71,23 +70,23 @@ func (this *Database) GetEntries(n, offset int) []Entry {
 }
 
 func (this *Database) GetEntry(idString string) (Entry, error) {
-	query := "SELECT * FROM ? WHERE id = ?"
+	query := "SELECT * FROM " + ENTRY_TABLE_NAME + " WHERE id = ?"
 
 	var id int
 	var title string
 	var date mysql.NullTime
 	var body string
 
-	row := this.db.QueryRow(query, ENTRY_TABLE_NAME, idString)
+	row := this.db.QueryRow(query, idString)
 	err := row.Scan(&id, &title, &date, &body)
 
 	return Entry{Id: id, Title: title, Date: date.Time, Body: body}, err
 }
 
 func (this *Database) Post(e Entry) error {
-	query := "INSERT INTO ? (title, date, body) VALUES(?, ?, ?)"
+	query := "INSERT INTO " + ENTRY_TABLE_NAME + " (title, date, body) VALUES(?, ?, ?)"
 
-	_, err := this.db.Exec(query, ENTRY_TABLE_NAME, e.Title, e.Date, e.Body)
+	_, err := this.db.Exec(query, e.Title, e.Date, e.Body)
 	if err != nil {
 		log.Printf("posting %+v ends in failure.\n", e.Title)
 	} else {
