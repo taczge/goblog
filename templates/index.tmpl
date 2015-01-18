@@ -1,14 +1,5 @@
 {{define "index"}}
 {{template "header"}}
-{{range .}}
-<div id="entry">
-  <div id="entry-info">
-    <div id="date">{{ printf "%d-%d-%d" .Date.Year .Date.Month .Date.Day}}</div>
-  </div>
-  <h2>{{.Title |html}}</h2>
-  <div id="entry-contents">
-    {{printf "%s" .Body |html}}
-  </div>
-</div>{{end}}
+{{range .}}{{template "_entry" .}}{{end}}
 {{template "footer"}}
 {{end}}

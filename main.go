@@ -31,6 +31,8 @@ func makeHandler(conf Config) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		t := template.Must(template.ParseFiles(
 			"templates/index.tmpl",
+			"templates/_entry.tmpl",
+			"templates/entry.tmpl",
 			"templates/header.tmpl",
 			"templates/footer.tmpl"))
 		db, err := ConnectDatabase(conf)
@@ -68,6 +70,7 @@ func makeEntryHandler(conf Config) http.HandlerFunc {
 		}
 
 		t := template.Must(template.ParseFiles(
+			"templates/_entry.tmpl",
 			"templates/entry.tmpl",
 			"templates/header.tmpl",
 			"templates/footer.tmpl"))
