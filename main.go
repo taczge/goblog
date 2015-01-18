@@ -57,7 +57,6 @@ func makeEntryHandler(conf Config) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		log.Printf("call handler: %+v", r.URL)
 		id := trim(r.URL.Path, "/entry/", ".html")
-		log.Println(id)
 		db, err := ConnectDatabase(conf)
 		if err != nil {
 			panic(err) // いまだけ，じき直す
@@ -66,9 +65,16 @@ func makeEntryHandler(conf Config) http.HandlerFunc {
 		entry, err := db.GetEntry(id)
 		if err != nil {
 			log.Printf("not found %+v.\n", r.URL)
-			fmt.Fprintf(w, "not found %+v.\n", r.URL)
-		} else {
-			fmt.Fprintf(w, "%+v\n", entry)
+		}
+
+		t := template.Must(template.ParseFiles(
+			"templates/entry.tmpl",
+			"templates/header.tmpl",
+			"templates/footer.tmpl"))
+
+		err = t.ExecuteTemplate(w, "entry", entry)
+		if err != nil {
+			panic(err) // TODO: internal server error?
 		}
 	}
 }
