@@ -67,7 +67,6 @@ body {
   ul>li:hover {
     background: #ddd;
   }
-
 }
 
 #footer {
@@ -97,5 +96,20 @@ body {
 #entry-info {
   #date {
     color: gray;
+  }
+}
+
+#archive {
+  ul {
+    list-style-type: circle;
+  }
+
+  ul>li>a {
+    color: gray;
+    text-decoration: none;
+  }
+
+  ul>li:hover {
+    text-decoration: underline;
   }
 }
