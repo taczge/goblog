@@ -75,17 +75,25 @@ body {
     padding: 10px 0 20px;
 }
 
+$entry-title-color: black;
 #contents {
   color: gray;
   font-size: 18px;
   margin-bottom: 14px;
 
   h2 {
-    color: black;
+    color: $entry-title-color;
     font-weight: bold;
     font-size: 30px;
     padding: 5px 0 5px 0;
     margin-bottom: 15px;
+
+    a {
+      text-decoration: none;
+      &:visited {
+        color: $entry-title-color;
+      }
+    }
   }
 }
 
