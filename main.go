@@ -29,19 +29,13 @@ func registerFileServer(paths []string) {
 
 func makeHandler(conf Config) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		t := template.Must(template.ParseFiles(
-			"templates/index.tmpl",
-			"templates/_entry.tmpl",
-			"templates/entry.tmpl",
-			"templates/header.tmpl",
-			"templates/footer.tmpl"))
 		db, err := ConnectDatabase(conf)
 		if err != nil {
 			panic(err) // いまだけ，じき直す
 		}
 		entries := db.GetEntries(conf.ArticlePerPage, 0)
 
-		err = t.ExecuteTemplate(w, "index", entries)
+		err = tmpl.ExecuteTemplate(w, "index", entries)
 		if err != nil {
 			panic(err)
 		}
@@ -69,13 +63,7 @@ func makeEntryHandler(conf Config) http.HandlerFunc {
 			log.Printf("not found %+v.\n", r.URL)
 		}
 
-		t := template.Must(template.ParseFiles(
-			"templates/_entry.tmpl",
-			"templates/entry.tmpl",
-			"templates/header.tmpl",
-			"templates/footer.tmpl"))
-
-		err = t.ExecuteTemplate(w, "entry", entry)
+		err = tmpl.ExecuteTemplate(w, "entry", entry)
 		if err != nil {
 			panic(err) // TODO: internal server error?
 		}
@@ -95,16 +83,17 @@ func makeArchiveHandler(conf Config) http.HandlerFunc {
 			fmt.Fprintf(w, "not found %+v.\n", r.URL)
 		}
 
-		t := template.Must(template.ParseFiles(
-			"templates/archive.tmpl",
-			"templates/header.tmpl",
-			"templates/footer.tmpl"))
-
-		err = t.ExecuteTemplate(w, "archive", entries)
+		err = tmpl.ExecuteTemplate(w, "archive", entries)
 		if err != nil {
 			panic(err) // TODO: internal server error?
 		}
 	}
+}
+
+var tmpl *template.Template
+func init() {
+	log.Println("Load templates.")
+	tmpl = template.Must(template.ParseGlob("templates/*.tmpl"))
 }
 
 func main() {
