@@ -31,13 +31,21 @@ func makeHandler(conf Config) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		db, err := ConnectDatabase(conf)
 		if err != nil {
-			panic(err) // いまだけ，じき直す
+			log.Printf("internal server error: %s", err.Error())
+
+			status := http.StatusInternalServerError
+			http.Error(w, err.Error(), status)
+			return
 		}
 		entries := db.GetEntries(conf.ArticlePerPage, 0)
 
 		err = tmpl.ExecuteTemplate(w, "index", entries)
 		if err != nil {
-			panic(err)
+			log.Printf("internal server error: %s", err.Error())
+
+			status := http.StatusInternalServerError
+			http.Error(w, err.Error(), status)
+			return
 		}
 	}
 }
@@ -51,21 +59,32 @@ func trim(s, prefix, suffix string) string {
 
 func makeEntryHandler(conf Config) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		log.Printf("call handler: %+v", r.URL)
 		id := trim(r.URL.Path, "/entry/", ".html")
 		db, err := ConnectDatabase(conf)
 		if err != nil {
-			panic(err) // いまだけ，じき直す
+			log.Printf("internal server error: %s", err.Error())
+
+			status := http.StatusInternalServerError
+			http.Error(w, err.Error(), status)
+			return
 		}
 
 		entry, err := db.GetEntry(id)
 		if err != nil {
-			log.Printf("not found %+v.\n", r.URL)
+			log.Printf("internal server error: %s", err.Error())
+
+			status := http.StatusInternalServerError
+			http.Error(w, err.Error(), status)
+			return
 		}
 
 		err = tmpl.ExecuteTemplate(w, "entry", entry)
 		if err != nil {
-			panic(err) // TODO: internal server error?
+			log.Printf("internal server error: %s", err.Error())
+
+			status := http.StatusInternalServerError
+			http.Error(w, err.Error(), status)
+			return
 		}
 	}
 }
@@ -74,18 +93,29 @@ func makeArchiveHandler(conf Config) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		db, err := ConnectDatabase(conf)
 		if err != nil {
-			panic(err) // TODO: internal server error?
+			log.Printf("internal server error: %s", err.Error())
+
+			status := http.StatusInternalServerError
+			http.Error(w, err.Error(), status)
+			return
 		}
 
 		entries := db.GetEntries(conf.ArchiveListSize, 0)
 		if err != nil {
-			log.Printf("not found %+v.\n", r.URL)
-			fmt.Fprintf(w, "not found %+v.\n", r.URL)
+			log.Printf("internal server error: %s", err.Error())
+
+			status := http.StatusInternalServerError
+			http.Error(w, err.Error(), status)
+			return
 		}
 
 		err = tmpl.ExecuteTemplate(w, "archive", entries)
 		if err != nil {
-			panic(err) // TODO: internal server error?
+			log.Printf("internal server error: %s", err.Error())
+
+			status := http.StatusInternalServerError
+			http.Error(w, err.Error(), status)
+			return
 		}
 	}
 }
