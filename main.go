@@ -6,17 +6,9 @@ import (
 	"log"
 	"net/http"
 	"strings"
-	"time"
 )
 
 const CONFIG_FILE = "config.json"
-
-type Entry struct {
-	Id    int
-	Title string
-	Date  time.Time
-	Body  string
-}
 
 func registerFileServer(paths []string) {
 	for _, path := range paths {
@@ -121,6 +113,7 @@ func makeArchiveHandler(conf Config) http.HandlerFunc {
 }
 
 var tmpl *template.Template
+
 func init() {
 	log.Println("Load templates.")
 	tmpl = template.Must(template.ParseGlob("templates/*.tmpl"))
