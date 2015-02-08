@@ -8,8 +8,6 @@ import (
 	"strings"
 )
 
-const CONFIG_FILE = "config.json"
-
 func registerFileServer(paths []string) {
 	for _, path := range paths {
 		pattern := fmt.Sprintf("/%v/", path)
@@ -114,12 +112,10 @@ func makeArchiveHandler(conf Config) http.HandlerFunc {
 
 var tmpl *template.Template
 
-func init() {
+func run() {
 	log.Println("Load templates.")
 	tmpl = template.Must(template.ParseGlob("templates/*.tmpl"))
-}
 
-func run() {
 	log.Printf("Run server.")
 	conf := LoadConfig()
 
