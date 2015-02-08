@@ -87,11 +87,17 @@ func (this *Database) Post(e Entry) error {
 	query := "INSERT INTO " + ENTRY_TABLE_NAME + " (title, date, body) VALUES(?, ?, ?)"
 
 	_, err := this.db.Exec(query, e.Title, e.Date, e.Body)
-	if err != nil {
-		log.Printf("posting %+v ends in failure.\n", e.Title)
-	} else {
+	if err == nil {
 		log.Printf("complete posting %+v.\n", e.Title)
+	} else {
+		log.Printf("posting %+v ends in failure.\n", e.Title)
 	}
 
 	return err
+}
+
+func (this *Database) PostFile(filename string) error {
+	entry := LoadEntry(filename)
+
+	return this.Post(entry)
 }

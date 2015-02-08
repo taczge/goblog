@@ -119,7 +119,7 @@ func init() {
 	tmpl = template.Must(template.ParseGlob("templates/*.tmpl"))
 }
 
-func main() {
+func run() {
 	log.Printf("Run server.")
 	conf := LoadConfig()
 
@@ -131,4 +131,8 @@ func main() {
 
 	port := fmt.Sprintf(":%d", conf.Port)
 	log.Fatal(http.ListenAndServe(port, nil))
+}
+
+func main() {
+	run()
 }
