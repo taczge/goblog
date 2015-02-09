@@ -5,6 +5,7 @@ import (
 	"html/template"
 	"log"
 	"net/http"
+	"strconv"
 	"strings"
 )
 
@@ -27,7 +28,12 @@ func makeHandler(conf Config) http.HandlerFunc {
 			http.Error(w, err.Error(), status)
 			return
 		}
-		entries := db.GetEntries(conf.ArticlePerPage, 0)
+
+		offset, err := strconv.Atoi(r.URL.Query().Get("page"))
+		if offset <= 0 || err != nil {
+			offset = 0
+		}
+		entries := db.GetEntries(conf.ArticlePerPage, offset)
 
 		err = tmpl.ExecuteTemplate(w, "index", entries)
 		if err != nil {
