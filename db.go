@@ -80,6 +80,8 @@ func (this *Database) GetEntry(idString string) (Entry, error) {
 	row := this.db.QueryRow(query, idString)
 	err := row.Scan(&id, &title, &date, &body)
 
+	log.Printf("invoke query to get article: id=%d.", id)
+
 	return Entry{Id: id, Title: title, Date: date.Time, Body: body}, err
 }
 
