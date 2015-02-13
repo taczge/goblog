@@ -1,7 +1,8 @@
+# mysql> source build.sql;
 drop database blog;
 create database blog;
 use blog;
-create table entry (id INT auto_increment primary key, title VARCHAR(200) not null, date DATE not null, body TEXT not null);
+create table entry (id INT primary key, title VARCHAR(200) not null, date DATE not null, body TEXT not null);
 
 load data local infile 'entry.csv' into table entry fields terminated by ',';
 
