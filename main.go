@@ -18,7 +18,12 @@ func registerFileServer(paths []string) {
 	}
 }
 
-func makeHandler(conf Config) http.HandlerFunc {
+type HomePage struct {
+	Entries []Entry
+	Offset  int
+}
+
+func makeHomeHandler(conf Config) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		db, err := ConnectDatabase(conf)
 		if err != nil {
@@ -34,8 +39,12 @@ func makeHandler(conf Config) http.HandlerFunc {
 			offset = 0
 		}
 		entries := db.GetEntries(conf.ArticlePerPage, offset)
+		page := HomePage{
+			Entries: entries,
+			Offset:  offset + conf.ArticlePerPage,
+		}
 
-		err = tmpl.ExecuteTemplate(w, "index", entries)
+		err = tmpl.ExecuteTemplate(w, "index", page)
 		if err != nil {
 			log.Printf("internal server error: %s", err.Error())
 
@@ -125,7 +134,7 @@ func run() {
 	log.Printf("Run server.")
 	conf := LoadConfig()
 
-	http.HandleFunc("/", makeHandler(conf))
+	http.HandleFunc("/", makeHomeHandler(conf))
 	registerFileServer(conf.FileServer)
 
 	http.HandleFunc("/entry/", makeEntryHandler(conf))

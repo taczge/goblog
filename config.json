@@ -3,7 +3,7 @@
     "db_passwd": "",
     "db_name": "blog",
     "article_per_page": 3,
-    "archive_list_size": 10,
+    "archive_list_size": 20,
     "port": 8080,
     "file_server": [ "css", "resources" ]
 }

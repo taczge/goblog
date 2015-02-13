@@ -123,3 +123,12 @@ $entry-title-color: black;
     text-decoration: underline;
   }
 }
+
+#next {
+  a {
+    text-decoration: none;
+    &:visited {
+      color: gray;
+    }
+  }
+}
