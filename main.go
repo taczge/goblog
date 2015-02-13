@@ -34,7 +34,7 @@ func makeHomeHandler(conf Config) http.HandlerFunc {
 			return
 		}
 
-		offset, err := strconv.Atoi(r.URL.Query().Get("page"))
+		offset, err := strconv.Atoi(r.URL.Query().Get("offset"))
 		if offset <= 0 || err != nil {
 			offset = 0
 		}

@@ -1,6 +1,6 @@
 {{define "index"}}
 {{template "header"}}
 {{range .Entries}}{{template "_entry" .}}{{end}}
-<div id="next"><a href="?page={{.Offset}}">next</a></div>
+<div id="next"><a href="?offset={{.Offset}}">next</a></div>
 {{template "footer"}}
 {{end}}
