@@ -5,6 +5,7 @@ import (
 	"html/template"
 	"log"
 	"net/http"
+	"os"
 	"strconv"
 	"strings"
 )
@@ -144,6 +145,30 @@ func run() {
 	log.Fatal(http.ListenAndServe(port, nil))
 }
 
+func load(args []string) {
+	if len(args) != 3 {
+		fmt.Printf("Usage: %s laod DIR\n", os.Args[0])
+		os.Exit(1)
+	}
+	conf := LoadConfig()
+	db, err := ConnectDatabase(conf)
+	if err != nil {
+		panic(err)
+	}
+	db.PostFiles(args[2])
+}
+
 func main() {
-	run()
+	if len(os.Args) < 2 {
+		fmt.Printf("Usage: %s COMMAND\n", os.Args[0])
+		os.Exit(1)
+	}
+
+	if os.Args[1] == "run" {
+		run()
+	}
+
+	if os.Args[1] == "load" {
+		load(os.Args)
+	}
 }

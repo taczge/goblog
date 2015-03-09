@@ -2,6 +2,7 @@ package main
 
 import (
 	"database/sql"
+	"io/ioutil"
 	"log"
 
 	"github.com/go-sql-driver/mysql"
@@ -22,7 +23,7 @@ func ConnectDatabase(c Config) (Database, error) {
 }
 
 func (this *Database) Size() int {
-	query := "select count(*) from " + ENTRY_TABLE_NAME
+	query := "SELECT COUNT(*) FROM " + ENTRY_TABLE_NAME
 	var size int
 	err := this.db.QueryRow(query).Scan(&size)
 	if err != nil {
@@ -43,7 +44,7 @@ func (this *Database) GetEntries(n, offset int) []Entry {
 	var entries = make([]Entry, n, n)
 	var i = 0
 	for rows.Next() {
-		var id int
+		var id string
 		var title string
 		var date mysql.NullTime
 		var body string
@@ -72,7 +73,7 @@ func (this *Database) GetEntries(n, offset int) []Entry {
 func (this *Database) GetEntry(idString string) (Entry, error) {
 	query := "SELECT * FROM " + ENTRY_TABLE_NAME + " WHERE id = ?"
 
-	var id int
+	var id string
 	var title string
 	var date mysql.NullTime
 	var body string
@@ -80,15 +81,15 @@ func (this *Database) GetEntry(idString string) (Entry, error) {
 	row := this.db.QueryRow(query, idString)
 	err := row.Scan(&id, &title, &date, &body)
 
-	log.Printf("invoke query to get article: id=%d.", id)
+	log.Printf("invoke query to get article: id=%s.", id)
 
 	return Entry{Id: id, Title: title, Date: date.Time, Body: body}, err
 }
 
 func (this *Database) Post(e Entry) error {
-	query := "INSERT INTO " + ENTRY_TABLE_NAME + " (title, date, body) VALUES(?, ?, ?)"
+	query := "INSERT INTO " + ENTRY_TABLE_NAME + " (id, title, date, body) VALUES(?, ?, ?, ?)"
 
-	_, err := this.db.Exec(query, e.Title, e.Date, e.Body)
+	_, err := this.db.Exec(query, e.Id, e.Title, e.Date, e.Body)
 	if err == nil {
 		log.Printf("complete posting %+v.\n", e.Title)
 	} else {
@@ -98,8 +99,21 @@ func (this *Database) Post(e Entry) error {
 	return err
 }
 
-func (this *Database) PostFile(filename string) error {
+func (this *Database) PostFile(filename string) {
 	entry := LoadEntry(filename)
+	err := this.Post(entry)
+	if err != nil {
+		panic(err)
+	}
+}
 
-	return this.Post(entry)
+func (this *Database) PostFiles(dir string) {
+	files, err := ioutil.ReadDir(dir)
+	if err != nil {
+		panic(err)
+	}
+
+	for _, f := range files {
+		this.PostFile(dir + f.Name())
+	}
 }
