@@ -56,8 +56,7 @@ func (this *Database) GetEntries(n, offset int) []Entry {
 			log.Fatalf("invalid date %+v\n", date)
 		}
 
-		e := Entry{Id: id, Title: title, Date: date.Time, Body: body}
-		entries[i] = e
+		entries[i] = NewEntry(id, title, date.Time, body)
 		i++
 	}
 
@@ -83,7 +82,7 @@ func (this *Database) GetEntry(idString string) (Entry, error) {
 
 	log.Printf("invoke query to get article: id=%s.", id)
 
-	return Entry{Id: id, Title: title, Date: date.Time, Body: body}, err
+	return NewEntry(id, title, date.Time, body), err
 }
 
 func (this *Database) Post(e Entry) error {

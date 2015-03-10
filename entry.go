@@ -3,6 +3,7 @@ package main
 import (
 	"bufio"
 	"bytes"
+	"html/template"
 	"os"
 	"strings"
 	"time"
@@ -12,7 +13,16 @@ type Entry struct {
 	Id    string
 	Title string
 	Date  time.Time
-	Body  string
+	Body  template.HTML
+}
+
+func NewEntry(id, title string, date time.Time, body string) Entry {
+	return Entry{
+		Id: id,
+		Title: title,
+		Date: date,
+		Body: template.HTML(body),
+	}
 }
 
 func LoadEntry(filename string) Entry {
@@ -64,7 +74,7 @@ func LoadEntry(filename string) Entry {
 		panic(err)
 	}
 
-	entry.Body = body.String()
+	entry.Body = template.HTML(body.String())
 
 	return entry
 }

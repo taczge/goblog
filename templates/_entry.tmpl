@@ -5,7 +5,7 @@
   </div>
   <h2><a href="/entry/{{.Id}}.html">{{.Title |html}}</a></h2>
   <div id="entry-contents">
-    {{printf "%s" .Body |html}}
+       {{ .Body }}
   </div>
 </div>
 {{end}}
