@@ -2,6 +2,7 @@ package main
 
 import (
 	"database/sql"
+	"fmt"
 	"io/ioutil"
 	"log"
 
@@ -88,7 +89,8 @@ func (this *Database) GetEntry(idString string) (Entry, error) {
 func (this *Database) Post(e Entry) error {
 	query := "INSERT INTO " + ENTRY_TABLE_NAME + " (id, title, date, body) VALUES(?, ?, ?, ?)"
 
-	_, err := this.db.Exec(query, e.Id, e.Title, e.Date, e.Body)
+	body := fmt.Sprintf("%s", e.Body)
+	_, err := this.db.Exec(query, e.Id, e.Title, e.Date, body)
 	if err == nil {
 		log.Printf("complete posting %+v.\n", e.Title)
 	} else {
