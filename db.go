@@ -7,24 +7,21 @@ import (
 	"log"
 
 	"github.com/go-sql-driver/mysql"
-
-	_ "github.com/go-sql-driver/mysql"
 )
 
-const ENTRY_TABLE_NAME = "entry"
-
 type Database struct {
-	db *sql.DB
+	db     *sql.DB
+	config Config
 }
 
 func ConnectDatabase(c Config) (Database, error) {
 	db, err := sql.Open("mysql", c.DBUser+":"+c.DBPasswd+"@/"+c.DBName)
 
-	return Database{db: db}, err
+	return Database{db: db, config: c}, err
 }
 
 func (this *Database) Size() int {
-	query := "SELECT COUNT(*) FROM " + ENTRY_TABLE_NAME
+	query := "SELECT COUNT(*) FROM " + this.config.DBTable
 	var size int
 	err := this.db.QueryRow(query).Scan(&size)
 	if err != nil {
@@ -35,7 +32,7 @@ func (this *Database) Size() int {
 }
 
 func (this *Database) GetEntries(n, offset int) []Entry {
-	query := "SELECT * FROM " + ENTRY_TABLE_NAME + " ORDER BY id DESC LIMIT ? OFFSET ?"
+	query := "SELECT * FROM " + this.config.DBTable + " ORDER BY id DESC LIMIT ? OFFSET ?"
 	rows, err := this.db.Query(query, n, offset)
 	if err != nil {
 		log.Fatal(err)
@@ -71,7 +68,7 @@ func (this *Database) GetEntries(n, offset int) []Entry {
 }
 
 func (this *Database) GetEntry(idString string) (Entry, error) {
-	query := "SELECT * FROM " + ENTRY_TABLE_NAME + " WHERE id = ?"
+	query := "SELECT * FROM " + this.config.DBTable + " WHERE id = ?"
 
 	var id string
 	var title string
@@ -87,7 +84,7 @@ func (this *Database) GetEntry(idString string) (Entry, error) {
 }
 
 func (this *Database) Post(e Entry) error {
-	query := "INSERT INTO " + ENTRY_TABLE_NAME + " (id, title, date, body) VALUES(?, ?, ?, ?)"
+	query := "INSERT INTO " + this.config.DBTable + " (id, title, date, body) VALUES(?, ?, ?, ?)"
 
 	body := fmt.Sprintf("%s", e.Body)
 	_, err := this.db.Exec(query, e.Id, e.Title, e.Date, body)
@@ -117,4 +114,29 @@ func (this *Database) PostFiles(dir string) {
 	for _, f := range files {
 		this.PostFile(dir + f.Name())
 	}
+}
+
+func SetupDatabase(c Config) {
+	log.Printf("Setup database.\n")
+	db, err := sql.Open("mysql", c.DBUser+":"+c.DBPasswd+"@/")
+	if err != nil {
+		panic(err)
+	}
+	log.Printf("Connect database.\n")
+
+	queries := []string{
+		fmt.Sprintf("DROP DATABASE %s", c.DBName),
+		fmt.Sprintf("CREATE DATABASE %s", c.DBName),
+		fmt.Sprintf("USE %s", c.DBName),
+		fmt.Sprintf("CREATE TABLE %s (id CHAR(17) PRIMARY KEY, title VARCHAR(200) NOT NULL, date DATE NOT NULL, body TEXT NOT NULL);", c.DBTable),
+	}
+
+	for _, q := range queries {
+		_, err := db.Exec(q)
+		if err != nil {
+			panic(err)
+		}
+		log.Printf("Invoke query: %s\n", q)
+	}
+	log.Printf("Setup completed successfully.\n")
 }

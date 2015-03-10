@@ -171,4 +171,9 @@ func main() {
 	if os.Args[1] == "load" {
 		load(os.Args)
 	}
+
+	if os.Args[1] == "setup" {
+		conf := LoadConfig()
+		SetupDatabase(conf)
+	}
 }

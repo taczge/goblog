@@ -11,6 +11,7 @@ type Config struct {
 	DBUser          string   `json:"db_user"`
 	DBPasswd        string   `json:"db_passwd"`
 	DBName          string   `json:"db_name"`
+	DBTable         string   `json:"db_table"`
 	ArticlePerPage  int      `json:"article_per_page"`
 	ArchiveListSize int      `json:"archive_list_size"`
 	Port            int      `json:"port"`
