@@ -125,7 +125,7 @@ func SetupDatabase(c Config) {
 	log.Printf("Connect database.\n")
 
 	queries := []string{
-		fmt.Sprintf("DROP DATABASE %s", c.DBName),
+		fmt.Sprintf("DROP DATABASE IF EXISTS %s", c.DBName),
 		fmt.Sprintf("CREATE DATABASE %s", c.DBName),
 		fmt.Sprintf("USE %s", c.DBName),
 		fmt.Sprintf("CREATE TABLE %s (id CHAR(17) PRIMARY KEY, title VARCHAR(200) NOT NULL, date DATE NOT NULL, body TEXT NOT NULL);", c.DBTable),
