@@ -147,7 +147,7 @@ func run() {
 
 func load(args []string) {
 	if len(args) != 3 {
-		fmt.Printf("Usage: %s laod DIR\n", os.Args[0])
+		fmt.Fprintf(os.Stderr, "usage: %s %s DIR\n", os.Args[0], os.Args[1])
 		os.Exit(1)
 	}
 	conf := LoadConfig()
@@ -160,7 +160,7 @@ func load(args []string) {
 
 func main() {
 	if len(os.Args) < 2 {
-		fmt.Printf("Usage: %s COMMAND\n", os.Args[0])
+		fmt.Fprintf(os.Stderr, "usage: %s COMMAND\n", os.Args[0])
 		os.Exit(1)
 	}
 
