@@ -9,18 +9,27 @@ import (
 	"github.com/go-sql-driver/mysql"
 )
 
-type Database struct {
+type Database interface {
+	Size() int
+	GetEntries(n, offset int) []Entry
+	GetEntry(idString string) (Entry, error)
+	Post(e Entry)
+	PostFile(filename string)
+	PostFiles(dir string)
+}
+
+type MySQL struct {
 	db     *sql.DB
 	config Config
 }
 
-func ConnectDatabase(c Config) (Database, error) {
+func ConnectMySQL(c Config) (MySQL, error) {
 	db, err := sql.Open("mysql", c.DBUser+":"+c.DBPasswd+"@/"+c.DBName)
 
-	return Database{db: db, config: c}, err
+	return MySQL{db: db, config: c}, err
 }
 
-func (this *Database) Size() int {
+func (this *MySQL) Size() int {
 	query := "SELECT COUNT(*) FROM " + this.config.DBTable
 	var size int
 	err := this.db.QueryRow(query).Scan(&size)
@@ -31,7 +40,7 @@ func (this *Database) Size() int {
 	return size
 }
 
-func (this *Database) GetEntries(n, offset int) []Entry {
+func (this *MySQL) GetEntries(n, offset int) []Entry {
 	query := "SELECT * FROM " + this.config.DBTable + " ORDER BY id DESC LIMIT ? OFFSET ?"
 	rows, err := this.db.Query(query, n, offset)
 	if err != nil {
@@ -67,7 +76,7 @@ func (this *Database) GetEntries(n, offset int) []Entry {
 	return entries
 }
 
-func (this *Database) GetEntry(idString string) (Entry, error) {
+func (this *MySQL) GetEntry(idString string) (Entry, error) {
 	query := "SELECT * FROM " + this.config.DBTable + " WHERE id = ?"
 
 	var id string
@@ -83,7 +92,7 @@ func (this *Database) GetEntry(idString string) (Entry, error) {
 	return NewEntry(id, title, date.Time, body), err
 }
 
-func (this *Database) Post(e Entry) error {
+func (this *MySQL) Post(e Entry) error {
 	query := "INSERT INTO " + this.config.DBTable + " (id, title, date, body) VALUES(?, ?, ?, ?)"
 
 	body := fmt.Sprintf("%s", e.Body)
@@ -97,7 +106,7 @@ func (this *Database) Post(e Entry) error {
 	return err
 }
 
-func (this *Database) PostFile(filename string) {
+func (this *MySQL) PostFile(filename string) {
 	entry := LoadEntry(filename)
 	err := this.Post(entry)
 	if err != nil {
@@ -105,7 +114,7 @@ func (this *Database) PostFile(filename string) {
 	}
 }
 
-func (this *Database) PostFiles(dir string) {
+func (this *MySQL) PostFiles(dir string) {
 	files, err := ioutil.ReadDir(dir)
 	if err != nil {
 		panic(err)
@@ -116,7 +125,7 @@ func (this *Database) PostFiles(dir string) {
 	}
 }
 
-func SetupDatabase(c Config) {
+func SetupMySQL(c Config) {
 	log.Printf("Setup database.\n")
 	db, err := sql.Open("mysql", c.DBUser+":"+c.DBPasswd+"@/")
 	if err != nil {

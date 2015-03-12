@@ -26,7 +26,7 @@ type HomePage struct {
 
 func makeHomeHandler(conf Config) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		db, err := ConnectDatabase(conf)
+		db, err := ConnectMySQL(conf)
 		if err != nil {
 			log.Printf("internal server error: %s", err.Error())
 
@@ -66,7 +66,7 @@ func trim(s, prefix, suffix string) string {
 func makeEntryHandler(conf Config) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		id := trim(r.URL.Path, "/entry/", ".html")
-		db, err := ConnectDatabase(conf)
+		db, err := ConnectMySQL(conf)
 		if err != nil {
 			log.Printf("internal server error: %s", err.Error())
 
@@ -97,7 +97,7 @@ func makeEntryHandler(conf Config) http.HandlerFunc {
 
 func makeArchiveHandler(conf Config) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		db, err := ConnectDatabase(conf)
+		db, err := ConnectMySQL(conf)
 		if err != nil {
 			log.Printf("internal server error: %s", err.Error())
 
@@ -151,7 +151,7 @@ func load(args []string) {
 		os.Exit(1)
 	}
 	conf := LoadConfig()
-	db, err := ConnectDatabase(conf)
+	db, err := ConnectMySQL(conf)
 	if err != nil {
 		panic(err)
 	}
@@ -174,6 +174,6 @@ func main() {
 
 	if os.Args[1] == "setup" {
 		conf := LoadConfig()
-		SetupDatabase(conf)
+		SetupMySQL(conf)
 	}
 }
