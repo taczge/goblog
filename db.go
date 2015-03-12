@@ -13,7 +13,7 @@ type Database interface {
 	Size() int
 	GetEntries(n, offset int) []Entry
 	GetEntry(idString string) (Entry, error)
-	Post(e Entry)
+	Post(e Entry) error
 	PostFile(filename string)
 	PostFiles(dir string)
 }
@@ -23,7 +23,7 @@ type MySQL struct {
 	config Config
 }
 
-func ConnectMySQL(c Config) (*MySQL, error) {
+func ConnectMySQL(c Config) (Database, error) {
 	db, err := sql.Open("mysql", c.DBUser+":"+c.DBPasswd+"@/"+c.DBName)
 
 	return &MySQL{db: db, config: c}, err
@@ -60,7 +60,7 @@ func (this *MySQL) GetEntries(n, offset int) []Entry {
 		}
 
 		if !date.Valid {
-			log.Fatalf("invalid date %+v\n", date)
+			log.Fatalf("invalid date %+v", date)
 		}
 
 		entries[i] = NewEntry(id, title, date.Time, body)
@@ -73,10 +73,10 @@ func (this *MySQL) GetEntries(n, offset int) []Entry {
 
 	log.Printf("invoke query to get %d articles(offset=%d).", n, offset)
 
-	return entries
+	return entries[:i]
 }
 
-func (this *MySQL) GetEntry(idString string) (Entry, error) {
+func (this *MySQL) GetEntry(primaryKey string) (Entry, error) {
 	query := "SELECT * FROM " + this.config.DBTable + " WHERE id = ?"
 
 	var id string
@@ -84,7 +84,7 @@ func (this *MySQL) GetEntry(idString string) (Entry, error) {
 	var date mysql.NullTime
 	var body string
 
-	row := this.db.QueryRow(query, idString)
+	row := this.db.QueryRow(query, primaryKey)
 	err := row.Scan(&id, &title, &date, &body)
 
 	log.Printf("invoke query to get article: id=%s.", id)
@@ -98,9 +98,9 @@ func (this *MySQL) Post(e Entry) error {
 	body := fmt.Sprintf("%s", e.Body)
 	_, err := this.db.Exec(query, e.Id, e.Title, e.Date, body)
 	if err == nil {
-		log.Printf("complete posting %+v.\n", e.Title)
+		log.Printf("complete posting %+v.", e.Title)
 	} else {
-		log.Printf("posting %+v ends in failure.\n", e.Title)
+		log.Printf("posting %+v ends in failure.", e.Title)
 	}
 
 	return err
@@ -126,12 +126,12 @@ func (this *MySQL) PostFiles(dir string) {
 }
 
 func SetupMySQL(c Config) {
-	log.Printf("Setup database.\n")
+	log.Printf("Setup database.")
 	db, err := sql.Open("mysql", c.DBUser+":"+c.DBPasswd+"@/")
 	if err != nil {
 		panic(err)
 	}
-	log.Printf("Connect database.\n")
+	log.Printf("Connect database.")
 
 	queries := []string{
 		fmt.Sprintf("DROP DATABASE IF EXISTS %s", c.DBName),
@@ -145,7 +145,7 @@ func SetupMySQL(c Config) {
 		if err != nil {
 			panic(err)
 		}
-		log.Printf("Invoke query: %s\n", q)
+		log.Printf("Invoke query: %s", q)
 	}
-	log.Printf("Setup completed successfully.\n")
+	log.Printf("Setup completed successfully.")
 }
