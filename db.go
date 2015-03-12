@@ -23,10 +23,10 @@ type MySQL struct {
 	config Config
 }
 
-func ConnectMySQL(c Config) (MySQL, error) {
+func ConnectMySQL(c Config) (*MySQL, error) {
 	db, err := sql.Open("mysql", c.DBUser+":"+c.DBPasswd+"@/"+c.DBName)
 
-	return MySQL{db: db, config: c}, err
+	return &MySQL{db: db, config: c}, err
 }
 
 func (this *MySQL) Size() int {
