@@ -2,10 +2,11 @@
 {{template "header"}}
 {{range .Entries}}{{template "_entry" .}}{{end}}
 {{if .ExistsPrevPage}}
-<div id="previous"><a href="?offset={{.PrevOffset}}">prev</a></div>
+<span id="pager"><a href="?offset={{.PrevOffset}}">prev</a></span>
 {{end}}
+{{if and .ExistsPrevPage .ExistsNextPage}}/{{end}}
 {{if .ExistsNextPage}}
-<div id="next"><a href="?offset={{.NextOffset}}">next</a></div>
+<span id="pager"><a href="?offset={{.NextOffset}}">next</a></span>
 {{end}}
 {{template "footer"}}
 {{end}}

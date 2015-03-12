@@ -1,10 +1,13 @@
-# mysql> source build.sql;
-drop database blog;
-create database blog;
-use blog;
-# 17 = 2015-01-02-123859
-create table entry (id CHAR(17) primary key, title VARCHAR(200) not null, date DATE not null, body TEXT not null);
+#
+# usage: mysql> source build.sql;
+#
 
-load data local infile 'entry.csv' into table entry fields terminated by ',';
+DROP DATABASE IF EXISTS blog;
+CREATE DATABASE blog;
+USE blog;
+# id: 17 = 2015-01-02-123859
+CREATE TABLE entry (id CHAR(17) PRIMARY KEY, title VARCHAR(200) NOT NULL, date DATE NOT NULL, body TEXT NOT NULL);
 
-select * from entry;
+LOAD DATA LOCAL INFILE 'entry.csv' INTO TABLE entry FIELDS TERMINATED BY ',';
+
+SELECT * FROM entry;
